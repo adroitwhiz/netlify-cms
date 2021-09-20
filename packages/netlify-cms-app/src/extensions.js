@@ -3,6 +3,7 @@ import { NetlifyCmsCore as CMS } from 'netlify-cms-core';
 // Backends
 import { AzureBackend } from 'netlify-cms-backend-azure';
 import { GitHubBackend } from 'netlify-cms-backend-github';
+import { GiteaBackend } from 'netlify-cms-backend-gitea';
 import { GitLabBackend } from 'netlify-cms-backend-gitlab';
 import { GitGatewayBackend } from 'netlify-cms-backend-git-gateway';
 import { BitbucketBackend } from 'netlify-cms-backend-bitbucket';
@@ -35,6 +36,7 @@ CMS.registerBackend('git-gateway', GitGatewayBackend);
 CMS.registerBackend('azure', AzureBackend);
 CMS.registerBackend('github', GitHubBackend);
 CMS.registerBackend('gitlab', GitLabBackend);
+CMS.registerBackend('gitea', GiteaBackend);
 CMS.registerBackend('bitbucket', BitbucketBackend);
 CMS.registerBackend('test-repo', TestBackend);
 CMS.registerBackend('proxy', ProxyBackend);

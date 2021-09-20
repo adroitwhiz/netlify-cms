@@ -363,6 +363,7 @@ export interface CmsBackend {
   site_domain?: string;
   base_url?: string;
   auth_endpoint?: string;
+  auth_token_endpoint?: string;
   cms_label_prefix?: string;
   squash_merges?: boolean;
   proxy_url?: string;

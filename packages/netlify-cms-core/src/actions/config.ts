@@ -520,6 +520,7 @@ export function loadConfig(manualConfig: Partial<CmsConfig> = {}, onLoad: () => 
       const normalizedConfig = normalizeConfig(withLocalBackend);
 
       const config = applyDefaults(normalizedConfig);
+      console.log(config);
 
       dispatch(configLoaded(config));
 

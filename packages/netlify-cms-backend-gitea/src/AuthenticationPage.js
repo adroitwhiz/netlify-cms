@@ -1,12 +1,20 @@
 import React from 'react';
 import PropTypes from 'prop-types';
 import styled from '@emotion/styled';
-import { NetlifyAuthenticator, ImplicitAuthenticator } from 'netlify-cms-lib-auth';
+import { NetlifyAuthenticator, ImplicitAuthenticator, PkceAuthenticator } from 'netlify-cms-lib-auth';
 import { AuthenticationPage, Icon } from 'netlify-cms-ui-default';
 
 const LoginButtonIcon = styled(Icon)`
   margin-right: 18px;
 `;
+
+const clientSideAuthenticators = {
+  pkce: ({ base_url, auth_endpoint, app_id, auth_token_endpoint }) =>
+    new PkceAuthenticator({ base_url, auth_endpoint, app_id, auth_token_endpoint }),
+
+  implicit: ({ base_url, auth_endpoint, app_id, clearHash }) =>
+    new ImplicitAuthenticator({ base_url, auth_endpoint, app_id, clearHash }),
+};
 
 export default class GiteaAuthenticationPage extends React.Component {
   static propTypes = {
@@ -25,16 +33,18 @@ export default class GiteaAuthenticationPage extends React.Component {
   componentDidMount() {
     const {
       auth_type: authType = '',
-      base_url = 'https://gitea.com',
-      auth_endpoint = 'oauth/authorize',
+      base_url = this.props.base_url || 'https://gitea.com',
+      auth_endpoint = 'login/oauth/authorize',
+      auth_token_endpoint = 'login/oauth/token',
       app_id = '',
     } = this.props.config.backend;
 
-    if (authType === 'implicit') {
-      this.auth = new ImplicitAuthenticator({
+    if (clientSideAuthenticators[authType]) {
+      this.auth = clientSideAuthenticators[authType]({
         base_url,
         auth_endpoint,
         app_id,
+        auth_token_endpoint,
         clearHash: this.props.clearHash,
       });
       // Complete implicit authentication if we were redirected back to from the provider.
@@ -80,7 +90,7 @@ export default class GiteaAuthenticationPage extends React.Component {
         renderButtonContent={() => (
           <React.Fragment>
             <LoginButtonIcon type="gitea" />{' '}
-            {inProgress ? t('auth.loggingIn') : t('auth.loginWithGitLab')}
+            {inProgress ? t('auth.loggingIn') : t('auth.loginWithGitea')}
           </React.Fragment>
         )}
         t={t}

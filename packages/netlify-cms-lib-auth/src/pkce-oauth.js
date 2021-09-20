@@ -113,10 +113,14 @@ export default class PkceAuthenticator {
         document.location.origin + document.location.pathname,
       );
       authURL.searchParams.set('code_verifier', getCodeVerifier());
+      authURL.searchParams.set('client_secret', 'X3u6B9RzW6WgvCnyDX5aEzdCJtHq5KDWpUSuJjz20Wgo');
       //no need for verifier code so remove
       clearCodeVerifier();
 
-      const response = await fetch(authURL.href, { method: 'POST' });
+      const response = await fetch(authURL.href, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/x-www-form-urlencoded' }
+      });
       const data = await response.json();
       cb(null, { token: data.access_token, ...data });
     }
