@@ -128,7 +128,7 @@ export default class Gitea implements Implementation {
       initialWorkflowStatus: this.options.initialWorkflowStatus,
     });
     const user = await this.api.user();
-    const isCollab = await this.api.hasWriteAccess().catch((error: Error) => {
+    const hasWriteAccess = await this.api.hasWriteAccess().catch((error: Error) => {
       error.message = stripIndent`
         Repo "${this.repo}" not found.
 
@@ -140,7 +140,7 @@ export default class Gitea implements Implementation {
     });
 
     // Unauthorized user
-    if (!isCollab) {
+    if (!hasWriteAccess) {
       throw new Error('Your Gitea user account does not have access to this repo.');
     }
 
@@ -300,7 +300,7 @@ export default class Gitea implements Implementation {
   }
 
   deleteFiles(paths: string[], commitMessage: string) {
-    return this.api!.deleteFiles(paths, commitMessage);
+    return this.api!.deleteFiles(paths, commitMessage).then(() => void 0);
   }
 
   traverseCursor(cursor: Cursor, action: string) {

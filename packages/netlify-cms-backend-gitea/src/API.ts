@@ -60,121 +60,6 @@ enum CommitAction {
   UPDATE = 'update',
 }
 
-type CommitItem = {
-  base64Content?: string;
-  path: string;
-  oldPath?: string;
-  action: CommitAction;
-};
-
-interface CommitsParams {
-  commit_message: string;
-  branch: string;
-  author_name?: string;
-  author_email?: string;
-  actions?: {
-    action: string;
-    file_path: string;
-    previous_path?: string;
-    content?: string;
-    encoding?: string;
-  }[];
-}
-
-type GiteaCommitDiff = {
-  diff: string;
-  new_path: string;
-  old_path: string;
-  new_file: boolean;
-  renamed_file: boolean;
-  deleted_file: boolean;
-};
-
-enum GiteaCommitStatuses {
-  Pending = 'pending',
-  Running = 'running',
-  Success = 'success',
-  Failed = 'failed',
-  Canceled = 'canceled',
-}
-
-type GiteaCommitStatus = {
-  status: GiteaCommitStatuses;
-  name: string;
-  author: {
-    username: string;
-    name: string;
-  };
-  description: null;
-  sha: string;
-  ref: string;
-  target_url: string;
-};
-
-type GiteaMergeRebase = {
-  rebase_in_progress: boolean;
-  merge_error: string;
-};
-
-type GiteaPullRequest = {
-  id: number;
-  iid: number;
-  title: string;
-  description: string;
-  state: string;
-  merged_by: {
-    name: string;
-    username: string;
-  };
-  merged_at: string;
-  created_at: string;
-  updated_at: string;
-  target_branch: string;
-  source_branch: string;
-  author: {
-    name: string;
-    username: string;
-  };
-  labels: string[];
-  sha: string;
-};
-
-type GiteaRepo = {
-  shared_with_groups: { group_access_level: number }[] | null;
-  permissions: {
-    project_access: { access_level: number } | null;
-    group_access: { access_level: number } | null;
-  };
-};
-
-type GiteaBranch = {
-  name: string;
-  developers_can_push: boolean;
-  developers_can_merge: boolean;
-  commit: {
-    id: string;
-  };
-};
-
-type GiteaCommitRef = {
-  type: string;
-  name: string;
-};
-
-type GiteaCommit = {
-  id: string;
-  short_id: string;
-  title: string;
-  author_name: string;
-  author_email: string;
-  authored_date: string;
-  committer_name: string;
-  committer_email: string;
-  committed_date: string;
-  created_at: string;
-  message: string;
-};
-
 type GiteaUser = {
   active: boolean,
   avatar_url: string,
@@ -262,7 +147,7 @@ export default class API {
   responseToText = responseParser({ format: 'text', apiName: API_NAME });
 
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
-  requestJSON = (req: ApiRequest) => this.request(req).then(this.responseToJSON) as Promise<any>;
+  requestJSON = <T>(req: ApiRequest & {}) => this.request(req).then(this.responseToJSON) as Promise<T>;
   requestText = (req: ApiRequest) => this.request(req).then(this.responseToText) as Promise<string>;
 
   user = (): Promise<{ name: string, login: string }> => this.requestJSON('/user');
@@ -271,7 +156,7 @@ export default class API {
   MAINTAINER_ACCESS = 40;
 
   hasWriteAccess = async () => {
-    const {permissions}: GiteaRepo = await this.requestJSON(this.repoURL);
+    const {permissions}: GiteaRepo = await this.requestJSON<GiteaRepo>(this.repoURL);
 
     return permissions.push;
   };
